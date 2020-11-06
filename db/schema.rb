@@ -12,16 +12,6 @@
 
 ActiveRecord::Schema.define(version: 2020_11_06_192243) do
 
-  create_table "addresses", force: :cascade do |t|
-    t.string "line_1"
-    t.string "line_2"
-    t.string "city"
-    t.string "state"
-    t.string "zip_code"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "grant_awards", force: :cascade do |t|
     t.integer "grant_recipient_id", null: false
     t.integer "grant_filing_id", null: false
@@ -36,10 +26,13 @@ ActiveRecord::Schema.define(version: 2020_11_06_192243) do
   create_table "grant_filers", force: :cascade do |t|
     t.string "ein"
     t.string "name"
-    t.integer "address_id"
+    t.string "line_1"
+    t.string "line_2"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address_id"], name: "index_grant_filers_on_address_id"
     t.index ["ein"], name: "index_grant_filers_on_ein", unique: true
   end
 
@@ -57,15 +50,17 @@ ActiveRecord::Schema.define(version: 2020_11_06_192243) do
   create_table "grant_recipients", force: :cascade do |t|
     t.string "ein"
     t.string "name"
-    t.integer "address_id", null: false
+    t.string "line_1"
+    t.string "line_2"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address_id"], name: "index_grant_recipients_on_address_id"
     t.index ["ein"], name: "index_grant_recipients_on_ein", unique: true
   end
 
   add_foreign_key "grant_awards", "grant_filings"
   add_foreign_key "grant_awards", "grant_recipients"
   add_foreign_key "grant_filings", "grant_filers"
-  add_foreign_key "grant_recipients", "addresses"
 end

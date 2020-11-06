@@ -3,7 +3,11 @@ class CreateGrantRecipients < ActiveRecord::Migration[6.0]
     create_table :grant_recipients do |t|
       t.string :ein
       t.string :name
-      t.references :address, null: false, foreign_key: true
+      t.string :line_1
+      t.string :line_2
+      t.string :city
+      t.string :state
+      t.string :zip_code
 
       t.timestamps
     end

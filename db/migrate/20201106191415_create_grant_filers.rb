@@ -3,7 +3,11 @@ class CreateGrantFilers < ActiveRecord::Migration[6.0]
     create_table :grant_filers do |t|
       t.string :ein
       t.string :name
-      t.references :address
+      t.string :line_1
+      t.string :line_2
+      t.string :city
+      t.string :state
+      t.string :zip_code
 
       t.timestamps
     end
