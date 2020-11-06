@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2020_11_06_192243) do
 
   create_table "grant_filings", force: :cascade do |t|
     t.integer "grant_filer_id", null: false
+    t.string "url"
     t.integer "tax_year"
     t.datetime "tax_period_begin_date"
     t.datetime "tax_period_end_date"
@@ -45,6 +46,7 @@ ActiveRecord::Schema.define(version: 2020_11_06_192243) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["grant_filer_id"], name: "index_grant_filings_on_grant_filer_id"
+    t.index ["url"], name: "index_grant_filings_on_url", unique: true
   end
 
   create_table "grant_recipients", force: :cascade do |t|
