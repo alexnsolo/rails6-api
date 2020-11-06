@@ -12,6 +12,8 @@ class FilingSerializer
   end
   
   def serialize!
+    filing = nil
+    
     doc = Nokogiri::XML(URI.open(@filing_url))
     
     # Serialize filing data, abort transaction on error so that all or none of the data is saved
@@ -32,9 +34,10 @@ class FilingSerializer
       
       # Find or create a grant filing with the given params
       filing = GrantFiling.find_or_create_by(url: @filing_url) do |filing|
-        filing.tax_year              = get_integer(doc, "TaxYr")
-        filing.tax_period_begin_date = get_date(doc, "TaxPeriodEndDt")    
-        filing.tax_period_end_date   = get_date(doc, "TaxPeriodBeginDt")
+        filing.tax_year              = get_integer(doc, ["TaxYr", "TaxYear"])
+        filing.tax_period_begin_date = get_date(doc, ["TaxPeriodBeginDt", "TaxPeriodBeginDate"])    
+        filing.tax_period_end_date   = get_date(doc, ["TaxPeriodEndDt", "TaxPeriodEndDate"])
+        filing.timestamp             = get_datetime(doc, ["ReturnTs", "Timestamp"])
         filing.grant_filer_id        = filer.id
       end
       
@@ -42,7 +45,7 @@ class FilingSerializer
       GrantAward.where(grant_filing_id: filing.id).delete_all
       
       award_nodes = doc.search("IRS990ScheduleI RecipientTable")
-      award_nodes.take(2).each do |award_node|
+      award_nodes.each do |award_node|
         # Find an existing grant recipient by EIN, update with latest name and address, or create a new one
         recipient_ein = get_text(award_node, "RecipientEIN")
         recipient = GrantRecipient.find_or_create_by(ein: recipient_ein) do |recipient|
@@ -65,27 +68,62 @@ class FilingSerializer
       end
     end
     
+    filing.id
+  end
+  
+  def get_text(node, paths)
+    Array(paths).each do |path|
+      result = node.search(path)
+      if result.any?
+        return result.text
+      end
+    end
+    
     nil
   end
   
-  def get_text(node, path)
-    result = node.search(path)
-    result.text if result
+  def get_integer(node, paths)
+    Array(paths).each do |path|
+      result = node.search(path)
+      if result.any?
+        return result.text.to_i
+      end
+    end
+    
+    nil
   end
   
-  def get_integer(node, path)
-    result = node.search(path)
-    result.text.to_i if result
+  def get_float(node, paths)
+    Array(paths).each do |path|
+      result = node.search(path)
+      if result.any?
+        return result.text.to_f
+      end
+    end
+    
+    nil
   end
   
-  def get_float(node, path)
-    result = node.search(path)
-    result.text.to_f if result
+  def get_date(node, paths)
+    Array(paths).each do |path|
+      result = node.search(path)
+      if result.any?
+        return Date.parse(result.text)
+      end
+    end
+    
+    nil
   end
   
-  def get_date(node, path)
-    result = node.search(path)
-    Date.parse(result.text) if result
+  def get_datetime(node, paths)
+    Array(paths).each do |path|
+      result = node.search(path)
+      if result.any?
+        return DateTime.parse(result.text)
+      end
+    end
+    
+    nil
   end
   
 end
