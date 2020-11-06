@@ -47,7 +47,7 @@ class FilingSerializer
       award_nodes = doc.search("IRS990ScheduleI RecipientTable")
       award_nodes.each do |award_node|
         # Find an existing grant recipient by EIN, update with latest name and address, or create a new one
-        recipient_ein = get_text(award_node, "RecipientEIN")
+        recipient_ein = get_text(award_node, ["RecipientEIN", "EINOfRecipient"])
         recipient = GrantRecipient.find_or_create_by(ein: recipient_ein) do |recipient|
           receipient_address_node = award_node.search("USAddress")
           recipient.name     = get_text(award_node, "RecipientBusinessName BusinessNameLine1Txt")
