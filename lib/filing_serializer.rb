@@ -23,13 +23,14 @@ class FilingSerializer
       # Find an existing grant filer by EIN, update with latest name and address, or create a new one
       filer_ein = get_text(filer_node, "EIN")
       filer = GrantFiler.find_or_create_by(ein: filer_ein) do |filer|
-        filer_address_node = filer_node.search("USAddress")
-        filer.name     = get_text(filer_node, "BusinessName BusinessNameLine1Txt")
-        filer.line_1   = get_text(filer_address_node, "AddressLine1Txt")
-        filer.line_2   = get_text(filer_address_node, "AddressLine2Txt")
-        filer.city     = get_text(filer_address_node, "CityNm")
-        filer.state    = get_text(filer_address_node, "StateAbbreviationCd")
-        filer.zip_code = get_text(filer_address_node, "ZIPCd")
+        filer_address_node = filer_node.search("USAddress").first
+        filer_address_node ||= filer_node.search("AddressUS").first
+        filer.name     = get_text(filer_node, ["Name BusinessNameLine1", "BusinessName BusinessNameLine1Txt"])
+        filer.line_1   = get_text(filer_address_node, ["AddressLine1", "AddressLine1Txt"])
+        filer.line_2   = get_text(filer_address_node, ["AddressLine2", "AddressLine2Txt"])
+        filer.city     = get_text(filer_address_node, ["City", "CityNm"])
+        filer.state    = get_text(filer_address_node, ["State", "StateAbbreviationCd"])
+        filer.zip_code = get_text(filer_address_node, ["ZIPCode", "ZIPCd"])
       end
       
       # Find or create a grant filing with the given params
@@ -49,13 +50,14 @@ class FilingSerializer
         # Find an existing grant recipient by EIN, update with latest name and address, or create a new one
         recipient_ein = get_text(award_node, ["RecipientEIN", "EINOfRecipient"])
         recipient = GrantRecipient.find_or_create_by(ein: recipient_ein) do |recipient|
-          receipient_address_node = award_node.search("USAddress")
-          recipient.name     = get_text(award_node, "RecipientBusinessName BusinessNameLine1Txt")
-          recipient.line_1   = get_text(receipient_address_node, "AddressLine1Txt")
-          recipient.line_2   = get_text(receipient_address_node, "AddressLine2Txt")
-          recipient.city     = get_text(receipient_address_node, "CityNm")
-          recipient.state    = get_text(receipient_address_node, "StateAbbreviationCd")
-          recipient.zip_code = get_text(receipient_address_node, "ZIPCd")
+          receipient_address_node = award_node.search("USAddress").first
+          receipient_address_node ||= award_node.search("AddressUS").first
+          recipient.name     = get_text(award_node, ["RecipientNameBusiness BusinessNameLine1", "RecipientBusinessName BusinessNameLine1Txt"])
+          recipient.line_1   = get_text(receipient_address_node, ["AddressLine1", "AddressLine1Txt"])
+          recipient.line_2   = get_text(receipient_address_node, ["AddressLine2", "AddressLine2Txt"])
+          recipient.city     = get_text(receipient_address_node, ["City", "CityNm"])
+          recipient.state    = get_text(receipient_address_node, ["State", "StateAbbreviationCd"])
+          recipient.zip_code = get_text(receipient_address_node, ["ZIPCode", "ZIPCd"])
         end
         
         # Create grant award
