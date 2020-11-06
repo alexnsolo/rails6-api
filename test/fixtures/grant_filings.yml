@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  grant_filer: one
+  tax_year: 1
+  tax_period_begin_date: 2020-11-06 12:18:49
+  tax_period_end_date: 2020-11-06 12:18:49
+  timestamp: 2020-11-06 12:18:49
+
+two:
+  grant_filer: two
+  tax_year: 1
+  tax_period_begin_date: 2020-11-06 12:18:49
+  tax_period_end_date: 2020-11-06 12:18:49
+  timestamp: 2020-11-06 12:18:49
